@@ -1,19 +1,14 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex flex-col items-center justify-center text-white">
-    <h1 class="text-4xl font-bold mb-4">테스트 페이지</h1>
-    <p class="text-lg">GOSH0512 BLOG 가보자고</p>
-    <button class="mt-6 px-6 py-2 bg-white text-blue-600 rounded-lg shadow-md hover:bg-gray-100 transition">
-      CLICK
-    </button>
+  <div class="bg-gray-50 min-h-screen">
+    <MainProfile />
+    <MainNav />
+    <div class="max-w-5xl mx-auto">
+      <router-view />
+    </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'App',
-}
+<script setup>
+import MainProfile from './components/MainProfile.vue'
+import MainNav from './components/MainNav.vue'
 </script>
-
-<style>
-/* 필요 시 전역 스타일 가능 */
-</style>
