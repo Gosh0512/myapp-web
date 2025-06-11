@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Profile from '../views/Profile.vue'
-import Task from '../views/task.vue'
+import Task from '../views/Task.vue'
 import Investment from '../views/Investment.vue'
 import Reading from '../views/Reading.vue'
 import Workout from '../views/Workout.vue'
