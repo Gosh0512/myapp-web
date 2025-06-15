@@ -11,50 +11,37 @@
       </button>
     </div>
 
-    <!-- Filter Section -->
-    <div class="flex flex-wrap justify-center sm:justify-start items-center gap-3 mb-6">
-      <!-- Label Filter -->
-      <div class="flex items-center gap-2">
-<div class="flex items-center gap-2">
-  <span class="text-xs uppercase tracking-wider text-gray-500">Label</span>
-  <!-- 버튼 그룹 -->
-</div>
-        <button
-          v-for="label in filterOptions"
-          :key="label"
-          @click="selectedFilter = label"
-          :class="[
-            'text-sm px-3 py-1 rounded-full border transition',
-            selectedFilter === label
-              ? 'bg-black text-white border-black'
-              : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'
-          ]"
-        >
-          {{ label }}
-        </button>
-      </div>
+<!-- 필터 바 전체 -->
+<div class="flex flex-wrap justify-between items-center gap-2 mb-6">
+  <!-- 왼쪽: 버튼 그룹 -->
+  <div class="flex flex-wrap items-center gap-2">
+    <button
+      v-for="label in filterOptions"
+      :key="label"
+      @click="selectedFilter = label"
+      :class="[
+        'text-sm px-3 py-1 rounded-full border transition',
+        selectedFilter === label
+          ? 'bg-black text-white border-black'
+          : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'
+      ]"
+    >
+      {{ label }}
+    </button>
+  </div>
 
-      <!-- Status Filter -->
-      <div class="flex items-center gap-2 ml-4">
-<div class="flex items-center gap-2">
-  <span class="text-xs uppercase tracking-wider text-gray-500">Status</span>
-  <!-- 버튼 그룹 -->
+  <!-- 오른쪽: 셀렉트 박스 -->
+  <div>
+    <select
+      v-model="selectedStatus"
+      class="text-sm h-8 px-3 py-1 border border-gray-300 rounded-full bg-white text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+    >
+      <option value="all">All</option>
+      <option value="active">Active</option>
+      <option value="completed">Completed</option>
+    </select>
+  </div>
 </div>
-        <button
-          v-for="status in statusOptions"
-          :key="status.value"
-          @click="selectedStatus = status.value"
-          :class="[
-            'text-sm px-3 py-1 rounded-full border transition',
-            selectedStatus === status.value
-              ? 'bg-blue-600 text-white border-blue-600'
-              : 'bg-white text-gray-600 border-gray-300 hover:bg-blue-50'
-          ]"
-        >
-          {{ status.label }}
-        </button>
-      </div>
-    </div>
 
     <!-- Active Tasks -->
     <div v-if="filteredTodo.active.length" class="mb-4">
@@ -143,15 +130,20 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { Repeat } from 'lucide-vue-next'; // 반복 아이콘
 import TaskModal from './TaskModal.vue';
+import api from '../api';
+
+// const todo = ref([
+//   { id: 1, title: 'Walk 8000 steps', completed: false, label: 'daily', repeating: true },
+//   { id: 2, title: 'Read a book', completed: true, label: 'weekly', repeating: false },
+//   { id: 3, title: 'Change license and remove products', completed: true, label: 'monthly', repeating: true },
+// ]);
 
 const todo = ref([
-  { id: 1, title: 'Walk 8000 steps', completed: false, label: 'daily', repeating: true },
-  { id: 2, title: 'Read a book', completed: true, label: 'weekly', repeating: false },
-  { id: 3, title: 'Change license and remove products', completed: true, label: 'monthly', repeating: true },
-]);
+  // 초기 데이터 또는 GET 요청으로 받아오기
+])
 
 const filterOptions = ['all', 'daily', 'weekly', 'monthly'];
 const statusOptions = [
@@ -188,12 +180,16 @@ function checkboxChange(task) {
   task.completed = !task.completed;
 }
 
-function addNewTask(task) {
-  todo.value.push({
-    ...task,
-    id: Date.now(),
-    completed: false,
-  });
+async function addNewTask(task) {
+  try {
+    //alert(JSON.stringify(task));
+    const response = await api.post('/tasks', task);
+    todo.value.push(response.data); // DB에서 응답 받은 Task 추가
+    modalOpen.value = false;
+  } catch (err) {
+    console.error('Task 저장 실패:', err);
+    alert('저장 중 오류가 발생했습니다.');
+  }
 }
 
 function openModal() {
@@ -202,4 +198,13 @@ function openModal() {
   }
   modalOpen.value = true;
 }
+
+onMounted(async () => {
+  try {
+    const response = await api.get('/tasks');
+    todo.value = response.data;
+  } catch (err) {
+    console.error('할 일 목록 불러오기 실패:', err);
+  }
+});
 </script>
