@@ -1,142 +1,205 @@
 <template>
-  <div class="p-8 bg-gray-50 min-h-screen">
-    <div class="max-w-5xl mx-auto">
-      <h2 class="text-2xl font-bold mb-4">Task List</h2>
-      <!-- 상단 컨트롤바 -->
-      <div class="bg-white rounded-xl shadow flex items-center justify-between px-6 py-4 mb-4">
-        <div class="flex items-center gap-2">
-          <button class="px-3 py-1 rounded bg-gray-100 text-gray-700 font-semibold text-sm">All Tasks <span class="ml-1 text-xs text-gray-400">11</span></button>
-          <button class="px-3 py-1 rounded bg-blue-100 text-blue-700 font-semibold text-sm">To do <span class="ml-1 text-xs">3</span></button>
-          <button class="px-3 py-1 rounded bg-gray-100 text-blue-700 font-semibold text-sm">Completed <span class="ml-1 text-xs">4</span></button>
-        </div>
-        <div class="flex items-center gap-2">
-          <button class="flex items-center gap-1 px-4 py-2 border rounded-lg text-gray-700 font-medium">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-            Filter & Short
-          </button>
-          <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2">
-            Add New Task
-            <span class="bg-blue-800 w-6 h-6 flex items-center justify-center rounded-full text-white text-xl font-bold">+</span>
-          </button>
-        </div>
+  <section class="p-4">
+    <!-- Title + New Task Button -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
+      <h2 class="text-xl font-bold mb-2 sm:mb-0">Task List</h2>
+      <button
+        @click="openModal"
+        class="w-full sm:w-auto text-sm px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+      >
+        + New Task
+      </button>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="flex flex-wrap justify-center sm:justify-start items-center gap-3 mb-6">
+      <!-- Label Filter -->
+      <div class="flex items-center gap-2">
+<div class="flex items-center gap-2">
+  <span class="text-xs uppercase tracking-wider text-gray-500">Label</span>
+  <!-- 버튼 그룹 -->
+</div>
+        <button
+          v-for="label in filterOptions"
+          :key="label"
+          @click="selectedFilter = label"
+          :class="[
+            'text-sm px-3 py-1 rounded-full border transition',
+            selectedFilter === label
+              ? 'bg-black text-white border-black'
+              : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'
+          ]"
+        >
+          {{ label }}
+        </button>
       </div>
-      <!-- 할일 리스트 -->
-      <div class="bg-white rounded-xl shadow p-4">
-        <!-- To Do -->
-        <div>
-          <h3 class="font-bold text-lg mb-2 flex items-center gap-2">To Do <span class="bg-gray-100 text-blue-700 text-xs px-2 py-0.5 rounded">3</span></h3>
-          <div v-for="task in todo" :key="task.id" class="flex items-center justify-between bg-white rounded-lg border mb-3 px-4 py-3 shadow-sm">
-            <div class="flex items-center gap-3">
-              <svg width="18" height="18" fill="none" stroke="currentColor" class="text-gray-300" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-              <input type="checkbox" class="w-4 h-4 rounded border-gray-300" :checked="task.completed" />
-              <span :class="['font-medium', task.completed && 'line-through text-gray-400']">{{ task.title }}</span>
-              <span v-if="task.label" class="ml-2 px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs">{{ task.label }}</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <span v-if="task.due" class="flex items-center gap-1 text-gray-400 text-sm">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3M16 7V3M4 11h16M5 20h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2z"/></svg>
-                {{ task.due }}
-              </span>
-              <span v-if="task.comments" class="flex items-center gap-1 text-gray-400 text-sm">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                {{ task.comments }}
-              </span>
-              <span v-if="task.assignee" class="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-100">
-                <img :src="task.assignee" alt="user" class="object-cover w-full h-full"/>
-              </span>
-            </div>
-          </div>
-        </div>
-        <!-- complete -->
-        <div class="mt-6">
-          <h3 class="font-bold text-lg mb-2 flex items-center gap-2">completed <span class="bg-yellow-100 text-yellow-700 text-xs px-2 py-0.5 rounded">4</span></h3>
-          <div v-for="task in progress" :key="task.id" class="flex items-center justify-between bg-white rounded-lg border mb-3 px-4 py-3 shadow-sm">
-            <div class="flex items-center gap-3">
-              <svg width="18" height="18" fill="none" stroke="currentColor" class="text-gray-300" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-              <input type="checkbox" class="w-4 h-4 rounded border-gray-300" :checked="task.completed" />
-              <span :class="['font-medium', task.completed && 'line-through text-gray-400']">{{ task.title }}</span>
-              <span v-if="task.label" class="ml-2 px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs">{{ task.label }}</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <span v-if="task.due" class="flex items-center gap-1 text-gray-400 text-sm">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3M16 7V3M4 11h16M5 20h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2z"/></svg>
-                {{ task.due }}
-              </span>
-              <span v-if="task.comments" class="flex items-center gap-1 text-gray-400 text-sm">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                {{ task.comments }}
-              </span>
-              <span v-if="task.assignee" class="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-100">
-                <img :src="task.assignee" alt="user" class="object-cover w-full h-full"/>
-              </span>
-            </div>
-          </div>
-        </div>
-        <!-- ... Completed 등 나머지 카테고리도 위와 같은 방식으로 추가 가능 -->
+
+      <!-- Status Filter -->
+      <div class="flex items-center gap-2 ml-4">
+<div class="flex items-center gap-2">
+  <span class="text-xs uppercase tracking-wider text-gray-500">Status</span>
+  <!-- 버튼 그룹 -->
+</div>
+        <button
+          v-for="status in statusOptions"
+          :key="status.value"
+          @click="selectedStatus = status.value"
+          :class="[
+            'text-sm px-3 py-1 rounded-full border transition',
+            selectedStatus === status.value
+              ? 'bg-blue-600 text-white border-blue-600'
+              : 'bg-white text-gray-600 border-gray-300 hover:bg-blue-50'
+          ]"
+        >
+          {{ status.label }}
+        </button>
       </div>
     </div>
-  </div>
+
+    <!-- Active Tasks -->
+    <div v-if="filteredTodo.active.length" class="mb-4">
+<div class="flex items-center gap-2 text-gray-700 font-semibold text-sm mb-2">
+  <div class="w-1 h-4 bg-blue-500 rounded"></div>
+  <span>Active Tasks</span>
+</div>
+      <div class="space-y-3">
+        <div
+          v-for="task in filteredTodo.active"
+          :key="task.id"
+          class="p-3 rounded-md bg-white shadow-sm border flex items-center justify-between"
+        >
+          <div class="flex items-center gap-2">
+            <input type="checkbox" :checked="task.completed" @change="checkboxChange(task)" />
+            <span class="font-medium">{{ task.title }}</span>
+            <!-- 반복 여부 표시 -->
+            <Repeat
+              v-if="task.repeating"
+              class="w-4 h-4 text-green-500"
+              :title="'Repeating task'"
+            />
+          </div>
+          <span
+            v-if="task.label"
+            :class="[
+              'ml-2 px-2 py-0.5 rounded',
+              task.label === 'daily' ? 'bg-blue-100 text-blue-700' :
+              task.label === 'weekly' ? 'bg-purple-100 text-purple-700' :
+              task.label === 'monthly' ? 'bg-green-100 text-green-700' : ''
+            ]"
+          >
+            {{ task.label }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed Tasks -->
+    <div v-if="filteredTodo.completed.length">
+<div class="flex items-center gap-2 text-gray-700 font-semibold text-sm mb-2 mt-6">
+  <div class="w-1 h-4 bg-gray-400 rounded"></div>
+  <span>Completed Tasks</span>
+</div>
+      <div class="space-y-3">
+        <div
+          v-for="task in filteredTodo.completed"
+          :key="task.id"
+          class="p-3 rounded-md bg-white shadow-sm border flex items-center justify-between opacity-70"
+        >
+          <div class="flex items-center gap-2">
+            <input type="checkbox" :checked="task.completed" @change="checkboxChange(task)" />
+            <span class="font-medium line-through text-gray-400 underline underline-offset-4">
+              {{ task.title }}
+            </span>
+            <!-- 반복 여부 표시 -->
+            <Repeat
+              v-if="task.repeating"
+              class="w-4 h-4 text-green-400 opacity-60"
+              :title="'Repeating task'"
+            />
+          </div>
+          <span
+            v-if="task.label"
+            :class="[
+              'ml-2 px-2 py-0.5 rounded',
+              task.label === 'daily' ? 'bg-blue-100 text-blue-700' :
+              task.label === 'weekly' ? 'bg-purple-100 text-purple-700' :
+              task.label === 'monthly' ? 'bg-green-100 text-green-700' : ''
+            ]"
+          >
+            {{ task.label }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Task Modal -->
+  <TaskModal
+    ref="modalRef"
+    :isOpen="modalOpen"
+    @close="modalOpen = false"
+    @submit="addNewTask"
+  />
 </template>
 
 <script setup>
-const todo = [
-  {
-    id: 1,
-    title: '낚시하러가기',
-    completed: false,
-    label: 'Marketing',
-    due: 'Tomorrow',
-    comments: 1,
-    assignee: ''
-  },
-  {
-    id: 2,
-    title: '책읽기',
-    completed: true,
-    label: 'Marketing',
-    due: 'Jan 8, 2027',
-    comments: 2,
-    assignee: ''
-  },
-  {
-    id: 3,
-    title: 'Change license and remove products',
-    completed: true,
-    label: 'Marketing',
-    due: 'Feb 12, 2027',
-    comments: 1,
-    assignee: ''
-  },
+import { ref, computed } from 'vue';
+import { Repeat } from 'lucide-vue-next'; // 반복 아이콘
+import TaskModal from './TaskModal.vue';
+
+const todo = ref([
+  { id: 1, title: 'Walk 8000 steps', completed: false, label: 'daily', repeating: true },
+  { id: 2, title: 'Read a book', completed: true, label: 'weekly', repeating: false },
+  { id: 3, title: 'Change license and remove products', completed: true, label: 'monthly', repeating: true },
+]);
+
+const filterOptions = ['all', 'daily', 'weekly', 'monthly'];
+const statusOptions = [
+  { label: 'all', value: 'all' },
+  { label: 'active', value: 'active' },
+  { label: 'completed', value: 'completed' },
 ];
 
-const progress = [
-  {
-    id: 4,
-    title: 'Work In Progress (WIP) Dashboard',
+const selectedFilter = ref('all');
+const selectedStatus = ref('all');
+
+const modalOpen = ref(false);
+const modalRef = ref();
+
+const filteredTodo = computed(() => {
+  const label = selectedFilter.value;
+  const status = selectedStatus.value;
+
+  let filtered = label === 'all' ? todo.value : todo.value.filter(t => t.label === label);
+
+  if (status === 'active') {
+    filtered = filtered.filter(t => !t.completed);
+  } else if (status === 'completed') {
+    filtered = filtered.filter(t => t.completed);
+  }
+
+  return {
+    active: filtered.filter(t => !t.completed),
+    completed: filtered.filter(t => t.completed),
+  };
+});
+
+function checkboxChange(task) {
+  task.completed = !task.completed;
+}
+
+function addNewTask(task) {
+  todo.value.push({
+    ...task,
+    id: Date.now(),
     completed: false,
-    label: '',
-    due: 'Today',
-    comments: 1,
-    assignee: ''
-  },
-  {
-    id: 5,
-    title: 'Kanban Flow Manager',
-    completed: false,
-    label: 'Template',
-    due: 'Feb 12, 2027',
-    comments: 8,
-    assignee: ''
-  },
-  {
-    id: 6,
-    title: 'Product Update - Q4 2024',
-    completed: false,
-    label: '',
-    due: 'Feb 12, 2027',
-    comments: 8,
-    assignee: ''
-  },
-  // ...데이터 추가 가능
-];
+  });
+}
+
+function openModal() {
+  if (modalRef.value?.resetTaskForm) {
+    modalRef.value.resetTaskForm();
+  }
+  modalOpen.value = true;
+}
 </script>

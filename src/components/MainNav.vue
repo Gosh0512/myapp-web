@@ -1,17 +1,15 @@
 <template>
-  <nav class="flex border-b border-gray-200 bg-white px-4 py-2">
-    <ul class="flex gap-10">
-      <li v-for="item in menu" :key="item.name">
+  <nav class="flex border-b border-gray-200 bg-white px-4 py-2 max-w-full overflow-x-hidden">
+    <ul class="flex gap-4 sm:gap-10 overflow-x-auto max-w-full whitespace-nowrap">
+      <li v-for="item in menu" :key="item.name" class="shrink-0">
         <router-link
           :to="item.path"
           class="flex flex-col items-center gap-1 text-sm pb-2 transition"
-          :class="[
-            $route.path === item.path
-              ? 'font-semibold text-gray-900 border-b-2 border-black'
-              : 'text-gray-500 hover:text-black'
+          :class="[ $route.path === item.path
+            ? 'font-semibold text-gray-900 border-b-2 border-black'
+            : 'text-gray-500 hover:text-black'
           ]"
         >
-          <!-- svg 아이콘 -->
           <span class="w-6 h-6 flex items-center justify-center">
             <component :is="item.icon" :class="$route.path === item.path ? 'text-black' : 'text-gray-400'" />
           </span>
