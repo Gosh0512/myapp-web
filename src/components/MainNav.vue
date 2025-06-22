@@ -50,7 +50,7 @@ const menu = [
   { name: 'Task', path: '/task', icon: taskIcon },
   { name: 'Investment', path: '/investment', icon: BanknotesIcon },
   { name: 'Reading', path: '/reading', icon: BookOpenIcon },
-  { name: 'Workout', path: '/workout', icon: DumbbellIcon },
+  { name: 'WorkoutList', path: '/WorkoutList', icon: DumbbellIcon },
   { name: 'Fishing', path: '/fishing', icon: FishIcon }
 ]
 </script>
