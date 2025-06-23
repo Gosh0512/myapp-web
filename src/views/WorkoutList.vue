@@ -8,7 +8,7 @@
               class="w-4 h-4 text-amber-50"
               :title="'Repeating task'"
           />  
-        <span class="ml-1 text-xs  text-white">요일별 운동세트</span>
+        <span class="ml-1 text-xs  text-white">요일별 운동세트 test</span>
       </button>
     </div>
 
