@@ -3,7 +3,7 @@ import Profile from '../views/Profile.vue'
 import Task from '../views/Task.vue'
 import Investment from '../views/Investment.vue'
 import Reading from '../views/Reading.vue'
-import WorkoutList from '../views/WorkoutList.vue'
+import Workout from '../views/Workout.vue'
 import Fishing from '../views/Fishing.vue'
 
 const routes = [
@@ -12,7 +12,7 @@ const routes = [
   { path: '/task', component: Task },
   { path: '/investment', component: Investment },
   { path: '/reading', component: Reading },
-  { path: '/WorkoutList', component: WorkoutList },
+  { path: '/Workout', component: Workout },
   { path: '/fishing', component: Fishing }
 ]
 
